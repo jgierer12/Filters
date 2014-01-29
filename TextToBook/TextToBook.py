@@ -263,29 +263,29 @@ def setDataAt(x, y, z, data):
 def perform(level, box, options):
     global GlobalLevel
     GlobalLevel = level
-    
+
     filePath = options["Convert"]
-    
+
     if filePath == "":
         try:
             filePath = askOpenFile("Select *.txt or *.docx file to convert to Book...", defaults=False, suffixes=["txt", "docx"])
-        
+
         except:
             try:
                 openFile = win32ui.CreateFileDialog(1, None, None, 0, "All Files (*.*)|*.*|Text Files (*.txt)|*.txt|Word Files (*.docx)|*.docx|")
                 openFile.DoModal()
                 filePath = openFile.GetPathName()
-    
+
             except:
                 raise Exception("win32ui could not be imported! Please enter the file path manually.")
-            
+
     fileName = filePath
-    
+
     while "/" in fileName:
         fileName = fileName[fileName.find("/")+1:]
-    
+
     fileExtension = fileName[fileName.find(".")+1:]
-    
+
     if options["Title of the book will be"] == "the file name without extension":
         bookTitle = fileName
     elif options["Title of the book will be"] == "the file name with extension":
