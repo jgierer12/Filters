@@ -38,7 +38,7 @@ inputs = (
 	(" - Droppers", True),
 )
 
-########## Fast data access ##########
+########## Fast data access by SethBling ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None
@@ -52,15 +52,15 @@ def getChunk(x, z):
 			GlobalChunkCache[chunkCoords] = GlobalLevel.getChunk(x>>4, z>>4)
 		except ChunkNotPresent:
 			return None
-	
+
 	return GlobalChunkCache[chunkCoords]
-	
+
 def tileEntityAt(x, y, z):
 	chunk = getChunk(x, z)
 	if chunk == None:
 		return 0
 	return chunk.tileEntityAt(x, y, z)
-	
+
 ########## End fast data access ##########
 
 def perform(level, box, options):
@@ -105,7 +105,7 @@ def getSlotCount(entID):
 def getIncludedIDs(options):
 	includedIDs = []
 	for option in options:
-		for (ID, slotCount, called) in containers: 
+		for (ID, slotCount, called) in containers:
 			if option == called or options["Include: (If checked, all will be included)"]:
 				includedIDs.append(ID)
 
@@ -119,18 +119,18 @@ def getRandomizes(level, box, options):
 			x = tile["x"].value
 			y = tile["y"].value
 			z = tile["z"].value
-			
+
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz:
 				includedIDs = getIncludedIDs(options)
 				if tile["id"].value in includedIDs:
 					slotCount = getSlotCount(tile["id"].value)
 					randomizes.append((x, z, tile, tile["Items"].value, slotCount, True))
-		
+
 		for ent in chunk.Entities:
 			x = int(ent["Pos"][0].value-0.5)
 			y = int(ent["Pos"][1].value)
 			z = int(ent["Pos"][2].value-0.5)
-			
+
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz:
 				includedIDs = getIncludedIDs(options)
 				if tile["id"].value in includedIDs:

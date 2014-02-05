@@ -53,7 +53,7 @@ inputs = [
     ),
 ]
 
-########## Fast data access ##########
+########## Fast data access by SethBling ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None

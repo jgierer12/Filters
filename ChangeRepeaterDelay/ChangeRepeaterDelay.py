@@ -20,7 +20,7 @@ inputs = (
 	("Value: ", 1),
 )
 
-########## Fast data access ##########
+########## Fast data access by SethBling ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None
@@ -34,7 +34,7 @@ def getChunk(x, z):
 			GlobalChunkCache[chunkCoords] = GlobalLevel.getChunk(x>>4, z>>4)
 		except ChunkNotPresent:
 			return None
-	
+
 	return GlobalChunkCache[chunkCoords]
 
 def blockAt(x, y, z):
@@ -48,7 +48,7 @@ def dataAt(x, y, z):
 	if chunk == None:
 		return 0
 	return chunk.Data[x%16][z%16][y]
-	
+
 ########## End fast data access ##########
 
 def perform(level, box, options):

@@ -367,7 +367,7 @@ inputs = (
 	("/give selector (\"//x\" etc. will be converted to position of the item frame): ", ("string", "value=@p[//x,//y,//z]")),
 )
 
-########## Fast data access ##########
+########## Fast data access by SethBling ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None

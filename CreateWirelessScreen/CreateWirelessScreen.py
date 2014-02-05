@@ -388,7 +388,7 @@ inputs = [
 	),
 ]
 
-########## Fast data access ##########
+########## Fast data access by SethBling ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None
@@ -402,7 +402,7 @@ def getChunk(x, z):
 			GlobalChunkCache[chunkCoords] = GlobalLevel.getChunk(x>>4, z>>4)
 		except ChunkNotPresent:
 			return None
-	
+
 	return GlobalChunkCache[chunkCoords]
 
 def blockAt(x, y, z):
@@ -416,13 +416,13 @@ def dataAt(x, y, z):
 	if chunk == None:
 		return 0
 	return chunk.Data[x%16][z%16][y]
-	
+
 def tileEntityAt(x, y, z):
 	chunk = getChunk(x, z)
 	if chunk == None:
 		return 0
 	return chunk.tileEntityAt(x, y, z)
-	
+
 def setBlockAt(x, y, z, block):
 	chunk = getChunk(x, z)
 	if chunk == None:
@@ -434,13 +434,13 @@ def setDataAt(x, y, z, data):
 	if chunk == None:
 		return 0
 	chunk.Data[x%16][z%16][y] = data
-	
+
 def tileEntityAt(x, y, z):
 	chunk = getChunk(x, z)
 	if chunk == None:
 		return 0
 	return chunk.tileEntityAt(x, y, z)
-		
+
 ########## End fast data access ##########
 
 def perform(level, box, options):

@@ -34,7 +34,7 @@ inputs = [
 	),
 ]
 
-########## Fast data access ##########
+########## Fast data access by SethBling ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None
@@ -48,7 +48,7 @@ def getChunk(x, z):
 			GlobalChunkCache[chunkCoords] = GlobalLevel.getChunk(x>>4, z>>4)
 		except ChunkNotPresent:
 			return None
-	
+
 	return GlobalChunkCache[chunkCoords]
 
 def blockAt(x, y, z):
@@ -62,7 +62,7 @@ def dataAt(x, y, z):
 	if chunk == None:
 		return 0
 	return chunk.Data[x%16][z%16][y]
-	
+
 def tileEntityAt(x, y, z):
 	chunk = getChunk(x, z)
 	if chunk == None:
@@ -140,12 +140,12 @@ def getSpawns(level, box, options):
 	spawns = []
 
 	for (chunk, slices, point) in level.getChunkSlices(box):
-		
+
 		for ent in chunk.Entities:
 			x = int(ent["Pos"][0].value-0.5)
 			y = int(ent["Pos"][1].value)
 			z = int(ent["Pos"][2].value-0.5)
-			
+
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz:
 				spawns.append((x, y, z, ent))
 

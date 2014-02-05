@@ -33,7 +33,7 @@ inputs = (
 )
 
 
-########## Fast data access ##########
+########## Fast data access by SethBling ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None
@@ -47,9 +47,9 @@ def getChunk(x, z):
 			GlobalChunkCache[chunkCoords] = GlobalLevel.getChunk(x>>4, z>>4)
 		except ChunkNotPresent:
 			return None
-	
+
 	return GlobalChunkCache[chunkCoords]
-	
+
 ########## End fast data access ##########
 
 def perform(level, box, options):
@@ -109,15 +109,15 @@ def getChanges(level, box, options):
 			x = tile["x"].value
 			y = tile["y"].value
 			z = tile["z"].value
-			
+
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz and "Command" in tile and options["Include Command Blocks"]:
 				changes.append((x, z, tile["Command"].value, True, tile))
-		
+
 		for ent in chunk.Entities:
 			x = int(ent["Pos"][0].value-0.5)
 			y = int(ent["Pos"][1].value)
 			z = int(ent["Pos"][2].value-0.5)
-			
+
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz and "Command" in ent and options["Include Command Block Minecarts"]:
 				changes.append((x, z, ent["Command"].value, False, ent))
 

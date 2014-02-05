@@ -26,7 +26,7 @@ inputs = (
 	("dz", 0),
 )
 
-########## Fast data access ##########
+########## Fast data access by SethBling ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None
@@ -40,7 +40,7 @@ def getChunk(x, z):
 			GlobalChunkCache[chunkCoords] = GlobalLevel.getChunk(x>>4, z>>4)
 		except ChunkNotPresent:
 			return None
-	
+
 	return GlobalChunkCache[chunkCoords]
 
 def blockAt(x, y, z):
@@ -54,13 +54,13 @@ def dataAt(x, y, z):
 	if chunk == None:
 		return 0
 	return chunk.Data[x%16][z%16][y]
-	
+
 def tileEntityAt(x, y, z):
 	chunk = getChunk(x, z)
 	if chunk == None:
 		return 0
 	return chunk.tileEntityAt(x, y, z)
-	
+
 ########## End fast data access ##########
 
 def perform(level, box, options):
@@ -70,7 +70,7 @@ def perform(level, box, options):
 	builds = getBlocks(box)
 	createCmdBlock(level, box, options, builds)
 
-def createCmdBlock(level, box, options, builds):	
+def createCmdBlock(level, box, options, builds):
 	# Find redstone/spawner coordinates
 	dx = options["dx"]
 	dy = options["dy"]
@@ -82,14 +82,14 @@ def createCmdBlock(level, box, options, builds):
 		rsy = (box.maxy + box.miny) / 2
 	if dz == 0:
 		rsz = (box.maxz + box.minz) / 2
-		
+
 	if dx < 0:
 		rsx = box.minx + dx
 	if dy < 0:
 		rsy = box.miny + dy
 	if dz < 0:
 		rsz = box.minz + dz
-	
+
 	if dx > 0:
 		rsx = box.maxx + dx
 	if dy > 0:
@@ -135,7 +135,7 @@ def createCmdBlock(level, box, options, builds):
 		level.setBlockAt(posX, posY, posZ, 137) # Command Block
 		cmd = cmdBlock((posX, posY, posZ), command)
 		if posY == rsy:
-			level.setBlockAt(posX, posY+1, posZ, 55) # Redstone 
+			level.setBlockAt(posX, posY+1, posZ, 55) # Redstone
 		chunk = getChunk(posX, posZ)
 		chunk.TileEntities.append(cmd)
 		chunk.dirty = True
@@ -161,7 +161,7 @@ def getBlocks(box):
 		for z in xrange(box.minz, box.maxz):
 			for y in xrange(box.maxy-1, box.miny-1, -1):
 				block = blockAt(x, y, z)
-				if block != 0:						
+				if block != 0:
 					builds.append((x, y, z, block, dataAt(x, y, z)))
 
 	return builds
@@ -186,5 +186,5 @@ def signTileEntity(x, y, z, text1, text2, text3, text4):
 	sign["x"] = TAG_Int(x)
 	sign["y"] = TAG_Int(y)
 	sign["z"] = TAG_Int(z)
-	
+
 	return sign
