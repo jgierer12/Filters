@@ -105,7 +105,7 @@ def perform(level, box, options):
 	global commandBlocks
 
 	if options["Step: "] == "Select":
-		command = command, commandBlocks = getCommandBlocks(level, box, options)
+		commandBlocks = getCommandBlocks(level, box, options)
 
 		if commandBlocks == []:
 			commandBlocks = None;
@@ -118,11 +118,11 @@ def perform(level, box, options):
 			elif box.maxz-box.minz < 5:
 				raise Exception("The selection must be at least 5 blocks wide (z dimension)")
 
-			createCmdBlocks(level, box, options, commandBlocks, command)
+			createCmdBlocks(level, box, options, commandBlocks)
 		else:
 			raise Exception("Please select an area with cmd blocks first!")
 
-def createCmdBlocks(level, box, options, commandBlocks, command):
+def createCmdBlocks(level, box, options, commandBlocks):
 
 	i = 0
 
@@ -158,7 +158,6 @@ def createCmdBlocks(level, box, options, commandBlocks, command):
 		i = i+1
 
 def getCommandBlocks(level, box, options):
-	commandBlocks = []
 	command = []
 
 	for (chunk, slices, point) in level.getChunkSlices(box):
@@ -170,16 +169,16 @@ def getCommandBlocks(level, box, options):
 			
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz:
 				if t["id"].value == "Control":
-					command = t["Command"].value
+					command.append(t["Command"].value)
 					if options["Print Commands After Selection"] == True:
 						print("Command At: " +str(x)+"(x)"+" "+str(y)+"(y)"+" "+str(z)+ "(z)" + " " +"is: " + command + "													")
 
-	return(command, commandBlocks)
+	return command
 	
 def cmdBlock(x, y, z, command):
 	control = TAG_Compound()
 	control["id"] = TAG_String("Control")
-	control["Command"] = TAG_String(command["Command"].value)
+	control["Command"] = TAG_String(command)
 	control["x"] = TAG_Int(x)
 	control["y"] = TAG_Int(y)
 	control["z"] = TAG_Int(z)
