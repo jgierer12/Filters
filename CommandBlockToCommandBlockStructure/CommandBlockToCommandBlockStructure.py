@@ -2,6 +2,7 @@
 # Filter for MCEdit by destruc7i0n 
 # Puts all the command blocks in the region into a structure that can activate them 
 # heavily based off of jgierer12's Create Wireless Screen Filter (http://is.gd/CWSJG12)
+# With help from @WireSegal or yrsegal
 
 from pymclevel import TAG_List
 from pymclevel import TAG_Byte
