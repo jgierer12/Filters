@@ -41,6 +41,7 @@ inputs = [
 		
 		("(Still A Work In Progress Page!)", "label"),
 		("Print Commands After Selection", True),
+		("Delete Command Blocks After Selection", False)
 	),
 ]
 
@@ -171,8 +172,18 @@ def getCommandBlocks(level, box, options):
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz:
 				if t["id"].value == "Control":
 					command.append(t["Command"].value)
+					
 					if options["Print Commands After Selection"] == True:
 						print("Command At: " +str(x)+"(x)"+" "+str(y)+"(y)"+" "+str(z)+ "(z)" + " " +"is: " + t["Command"].value + "													")
+
+					else:
+						continue
+
+					if options["Delete Command Blocks After Selection"] == True and level.blockAt(x, y, z) == 137:
+						level.setBlockAt(x, y , z , 0)
+
+					else:
+						continue
 
 	return command
 	
@@ -180,6 +191,7 @@ def cmdBlock(x, y, z, command):
 	control = TAG_Compound()
 	control["id"] = TAG_String("Control")
 	control["Command"] = TAG_String(command)
+	control["SuccessCount"] = TAG_Int(0)
 	control["x"] = TAG_Int(x)
 	control["y"] = TAG_Int(y)
 	control["z"] = TAG_Int(z)
@@ -194,7 +206,7 @@ def getNewPos(x, y, z, box, level, rsLen, direction):
 		if z < box.maxz-3:
 			z = z+1
 
-			if rsLen >= 16:
+			if rsLen >= 12:
 				rsLen = 0
 
 				level.setBlockAt(x, y+1, z, 159) # Block
@@ -239,7 +251,7 @@ def getNewPos(x, y, z, box, level, rsLen, direction):
 		if z > box.minz+3:
 			z = z-1
 
-			if rsLen >= 16:
+			if rsLen >= 12:
 				rsLen = 0
 
 				level.setBlockAt(x, y+1, z, 159) # Block
