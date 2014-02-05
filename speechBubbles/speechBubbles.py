@@ -18,7 +18,7 @@ inputs = (
     ("(\"n/a\" will display the particles at the center of the selection)", "label"),
     ("Distance to Entity:", 2),
     ("Direction:", ("-X -> +X", "+X -> -X", "-Z -> +Z", "+Z -> -Z")),
-    ("For information about Emoticons and custom Symbols visit http://is.gd/5IGCw5", "label")
+    ("For information about Characters and Emoticons visit http://is.gd/5IGCw5", "label")
 )
 
 
@@ -116,7 +116,7 @@ def perform(level, box, options):
         ":(": PGroup([(0.0, 0.0), (0.1, 0.1), (0.1, 0.4), (0.2, 0.1), (0.3, 0.1), (0.4, 0.1), (0.4, 0.4), (0.5, 0.0)], 0.6, 0.5),
         ":|": PGroup([(0.0, 0.1), (0.1, 0.1), (0.1, 0.4), (0.2, 0.1), (0.3, 0.1), (0.4, 0.1), (0.4, 0.4), (0.5, 0.1)], 0.6, 0.5),
         ":D": PGroup([(0.0, 0.1), (0.0, 0.2), (0.1, 0.0), (0.1, 0.4), (0.2, 0.0), (0.3, 0.0), (0.4, 0.0), (0.4, 0.4), (0.5, 0.1), (0.5, 0.2)], 0.6, 0.5),
-        ";)": PGroup([(0.0, 0.1), (0.1, 0.0), (0.1, 0.4), (0.2, 0.0), (0.2, 0.4), (0.3, 0.0), (0.4, 0.0), (0.4, 0.4), (0.5, 0.1)], 0.6, 0.5),
+        ";)": PGroup([(0.0, 0.1), (0.1, 0.0), (0.1, 0.4), (0.2, 0.0), (0.2, 0.4), (0.3, 0.0), (0.4, 0.0), (0.4, 0.4), (0.5, 0.1)], 0.6, 0.5)
     }
 
     width = 0.0
