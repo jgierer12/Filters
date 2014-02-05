@@ -155,7 +155,7 @@ def getCommandBlocks(level, box, options):
 			
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz:
 				if t["id"].value == "Control":
-					command = t["Command"].value
+					command.append(t["Command"].value)
 
 	return command
 	
