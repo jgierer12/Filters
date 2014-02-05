@@ -171,7 +171,7 @@ def getCommandBlocks(level, box, options):
 				if t["id"].value == "Control":
 					command.append(t["Command"].value)
 					if options["Print Commands After Selection"] == True:
-						print("Command At: " +str(x)+"(x)"+" "+str(y)+"(y)"+" "+str(z)+ "(z)" + " " +"is: " + command + "													")
+						print("Command At: " +str(x)+"(x)"+" "+str(y)+"(y)"+" "+str(z)+ "(z)" + " " +"is: " + t["Command"].value + "													")
 
 	return command
 	
