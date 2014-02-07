@@ -35,7 +35,7 @@ inputs = [
 
 		("Step: ", ("Select", "Generate")),
 		("", "label"),
-		("Way to Generate Cmd Blocks: ", ("Fit", "Wire Up")),
+		("Way to Generate Cmd Blocks: ", ("Wire Up", "Fit")),
 	),
 	
 	(
