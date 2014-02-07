@@ -34,6 +34,8 @@ inputs = [
 		("General", "title"),
 
 		("Step: ", ("Select", "Generate")),
+		("", "label"),
+		("Way to Generate Cmd Blocks: ", ("Fit", "Wire Up")),
 	),
 	
 	(
@@ -41,7 +43,7 @@ inputs = [
 		
 		("(Still A Work In Progress Page!)", "label"),
 		("Print Commands After Selection", True),
-		("Delete Command Blocks After Selection", False)
+		("Delete Command Blocks After Selection", False),
 	),
 ]
 
@@ -126,38 +128,66 @@ def perform(level, box, options):
 
 def createCmdBlocks(level, box, options, commandBlocks):
 
-	i = 0
-
-	x = box.minx
-	y = box.miny
-	z = box.minz
-
-	level.setBlockAt(x, y+2, z, 159) # Block
-	level.setBlockDataAt(x, y+2, z, 5) # Block Data
-	chunk = getChunk(x, z)
-	chunk.dirty = True
-
-	rsLen = 0
-	direction = True
-
-	for command in commandBlocks:
-		newPos = getNewPos(x, y, z, box, level, rsLen, direction)
-		x = newPos[0]
-		y = newPos[1]
-		z = newPos[2]
-
-		rsLen = newPos[3]
-		direction = newPos[4]
-
-		level.setBlockAt(x, y+2, z, 55) # Redstone Dust
-
-		level.setBlockAt(x, y+1, z, 137) # Command Block
+	if options["Way to Generate Cmd Blocks: "] == "Wire Up" and options["Step: "] == "Generate":
+		
+		i = 0
+	
+		x = box.minx
+		y = box.miny
+		z = box.minz
+	
+		level.setBlockAt(x, y+2, z, 159) # Block
+		level.setBlockDataAt(x, y+2, z, 5) # Block Data
 		chunk = getChunk(x, z)
-		commandBlock = cmdBlock(x, y+1, z, command)
-		chunk.TileEntities.append(commandBlock)
 		chunk.dirty = True
+	
+		rsLen = 0
+		direction = True
+	
+		for command in commandBlocks:
+			newPos = getNewPos(x, y, z, box, level, rsLen, direction)
+			x = newPos[0]
+			y = newPos[1]
+			z = newPos[2]
+	
+			rsLen = newPos[3]
+			direction = newPos[4]
+	
+			level.setBlockAt(x, y+2, z, 55) # Redstone Dust
+	
+			level.setBlockAt(x, y+1, z, 137) # Command Block
+			chunk = getChunk(x, z)
+			commandBlock = cmdBlock(x, y+1, z, command)
+			chunk.TileEntities.append(commandBlock)
+			chunk.dirty = True
+	
+			i = i+1
+		
+	elif options["Way to Generate Cmd Blocks: "] == "Fit" and options["Step: "] == "Generate":
 
-		i = i+1
+		x = box.minx
+		y = box.miny
+		z = box.minz
+
+		for command in commandBlocks:
+		
+			level.setBlockAt(x, y, z, 137) # Command Block
+			cmd = cmdBlock(x, y, z, command)
+			chunk = getChunk(x, z)
+			chunk.TileEntities.append(cmd)
+			chunk.dirty = True
+		
+			if x+1 < box.maxx:
+				x = x+1
+			elif z+1 < box.maxz:
+				z = z+1
+				x = box.minx
+			elif y+2 < box.maxy:
+				y = y+2
+				x = box.minx
+				z = box.minz
+			else:
+				raise Exception("Your selection is too small!")
 
 def getCommandBlocks(level, box, options):
 	command = []
