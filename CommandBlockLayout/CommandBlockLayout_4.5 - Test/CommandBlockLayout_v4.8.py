@@ -36,6 +36,10 @@ inputs = [
 
 		("Step: ", ("Select", "Generate")),
 		("How To Generate: ", ("@TwitchNitr0's Method", "Normal (Newer)", "Normal (Old)")),
+		("Find In Command: ", ("string", "value=N/A")),
+		("(Put N/A For None)", "label"),
+		("Way: ", ("+Y to -Y", "+Z to -Z", "+X to -X")),
+		("(FYI, the way to take the command blocks, (Up to down, left to right etc.)", "label"),
 	),
 	
 	(
@@ -213,32 +217,47 @@ def createCmdBlock(level, x, y, z, command): #abrightmoore - convenience method.
 	
 			
 def getCommandBlocks(level, box, options):
-	command = []
+    command = []
+    find = options["Find In Command: "]  # @WireSegal
 
-	for (chunk, slices, point) in level.getChunkSlices(box):
-		
-		for t in chunk.TileEntities:
-			x = t["x"].value
-			y = t["y"].value
-			z = t["z"].value
-			
-			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz:
-				if t["id"].value == "Control":
-					command.append(t["Command"].value)
-					
-					if options["Print Commands After Selection"] == True:
-						print("Command At: " +str(x)+"(x)"+" "+str(y)+"(y)"+" "+str(z)+ "(z)" + " " +"is: " + t["Command"].value + "													")
+    if options["Way: "] == "+Y to -Y":
+        for y in xrange(box.maxy, box.miny):
+            for x in xrange(box.maxx, box.minx):
+                for z in xrange(box.maxz, box.minz):
+                    if level.blockAt(x, y, z) == 137:
+                        command.append(getCommand(level, options, (x, y, z)))
 
-					else:
-						continue
+    elif options["Way: "] == "+Z to -Z":
+        for z in xrange(box.maxz, box.minz):
+            for y in xrange(box.maxy, box.miny):
+                for x in xrange(box.maxx, box.minx):
+                    if level.blockAt(x, y, z) == 137:
+                        command.append(getCommand(level, options, (x, y, z)))
 
-					if options["Delete Command Blocks After Selection"] == True and level.blockAt(x, y, z) == 137:
-						level.setBlockAt(x, y , z , 0)
+    elif options["Way: "] == "+X to -X":
+        for x in xrange(box.maxx, box.minx):
+            for y in xrange(box.maxy, box.miny):
+                for z in xrange(box.maxz, box.minz):
+                    if level.blockAt(x, y, z) == 137:
+                        command.append(getCommand(level, options, (x, y, z)))
 
-					else:
-						continue
 
-	return command
+def getCommand(level, options, (x, y, z)):
+    t = level.tileEntityAt(x, y, z)
+
+    if options["Print Commands After Selection"]: print("Command At: " + str(x) + "(x)" + " " + str(y) + "(y)" + " " + str(z) + "(z)" + " " + "is: " + t["Command"].value + "													")
+
+    if options["Delete Command Blocks After Selection"]:
+        level.setBlockAt(x, y, z, 0)
+        level.getChunk(x/16, z/16).TileEntities.remove(t)
+
+    if find == "N/A": return t["Command"].value  # @WireSegal
+
+    elif find in t["Command"].value:  # @WireSegal
+        print("Found " + options["Find In Command: "] + " at " + str(x) + "(x)" + " " + str(y) + "(y)" + " " + str(z) + "(z)" + " in " + t["Command"].value)
+        return t["Command"].value
+
+    else: print("Could Not Find " + find + " in " + t["Command"].value + " at " + str(x) + "(x)" + " " + str(y) + "(y)" + " " + str(z) + "(z)")
 
 
 	################################################## IGNORE ####################################################
