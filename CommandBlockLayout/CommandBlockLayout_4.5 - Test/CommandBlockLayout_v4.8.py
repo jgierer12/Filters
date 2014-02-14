@@ -140,8 +140,7 @@ def perform(level, box, options):
 		else:
 			raise Exception("Please select an area with cmd blocks first!")
 
-			
-			
+
 def refactorCmdBlocks(level, box, options, commandBlocks): # abrightmoore - pure cmd block method
 	MARKERMATERIAL = 159 # StainedClay
 	GREEN = 5
@@ -217,7 +216,7 @@ def createCmdBlock(level, x, y, z, command): #abrightmoore - convenience method.
 	
 			
 def getCommandBlocks(level, box, options):
-    command = []
+    commands = []
     find = options["Find In Command: "]  # @WireSegal
 
     if options["Way: "] == "+Y to -Y":
@@ -225,21 +224,23 @@ def getCommandBlocks(level, box, options):
             for x in xrange(box.maxx, box.minx):
                 for z in xrange(box.maxz, box.minz):
                     if level.blockAt(x, y, z) == 137:
-                        command.append(getCommand(level, options, (x, y, z)))
+                        commands.append(getCommand(level, options, (x, y, z)))
 
     elif options["Way: "] == "+Z to -Z":
         for z in xrange(box.maxz, box.minz):
             for y in xrange(box.maxy, box.miny):
                 for x in xrange(box.maxx, box.minx):
                     if level.blockAt(x, y, z) == 137:
-                        command.append(getCommand(level, options, (x, y, z)))
+                        commands.append(getCommand(level, options, (x, y, z)))
 
     elif options["Way: "] == "+X to -X":
         for x in xrange(box.maxx, box.minx):
             for y in xrange(box.maxy, box.miny):
                 for z in xrange(box.maxz, box.minz):
                     if level.blockAt(x, y, z) == 137:
-                        command.append(getCommand(level, options, (x, y, z)))
+                        commands.append(getCommand(level, options, (x, y, z)))
+
+    return commands
 
 
 def getCommand(level, options, (x, y, z)):
