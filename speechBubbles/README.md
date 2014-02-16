@@ -20,6 +20,7 @@ Included characters:
   * `!`
   * `?`
   * `_`
+  * `Ћ` *This character will curretly not work because MCEdit replaces some characters with `?`s in Filter inputs!*
 
 If a character is unknown, it will be replaced with a `_`.
 
