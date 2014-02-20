@@ -79,14 +79,16 @@ inputs = (
     ("Allow splitting a single document page", "label"),
     ("into multiple minecraft pages", True),
     ("", "label"),
-    ("Title of the book will be", ("the file name without extension", "the file name with extension", "a custom title")),
+    ("Use the file name", ("without extension", "with extension")),
+    ("as the book title (Will be overwritten by a Custom Title", "label"),
+    ("", "label"),
     ("Use", ("string", "value=Custom Book title")),
-    ("as the custom title", "label"),
+    ("as the book title", True),
     ("", "label"),
     ("Make highlighted text obfuscated", True),
 )
 
-# Character widths in px
+# Character widths in px for default Minecraft font
 characterWidths = {
     " ": 4,
     "!": 2,
@@ -205,7 +207,7 @@ colorCodes = {
     (255, 255, 255): "f"
 }
 
-########## Fast data access ##########
+########## Fast data access by SethBling ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None
@@ -285,13 +287,14 @@ def perform(level, box, options):
         fileName = fileName[fileName.find("/")+1:]
 
     fileExtension = fileName[fileName.find(".")+1:]
-
-    if options["Title of the book will be"] == "the file name without extension":
-        bookTitle = fileName
-    elif options["Title of the book will be"] == "the file name with extension":
-        bookTitle = fileName + "." + fileExtension
-    elif options["Title of the book will be"] == "a custom title":
+    
+    if options["as the book title"]:
         bookTitle = options["Use"]
+    
+    else:  
+        bookTitle = fileName
+        if options["Use the file name"] == "with extension":
+            bookTitle += "." + fileExtension
 
     if filePath is None or fileName == "":
         raise Exception("Please select a file!")
@@ -351,7 +354,7 @@ def decodeFile(textFile, textFileExt, options):
                 elif tagText[:8] == "w:strike":
                     styles = True
                     rawText[documentPage][paragraphNumber][0] += u"\u00A7m"
-                elif tagText[:11] == "w:highlight":
+                elif tagText[:11] == "w:highlight" and options["Make highlighted text obfuscated"]:
                     styles = True
                     rawText[documentPage][paragraphNumber][0] += u"\u00A7k"
                 elif tagText[:7] == "w:color":
