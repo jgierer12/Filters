@@ -1,5 +1,10 @@
-#### Convert IDs ####
-# Filter for MCEdit by jgierer12, suggested by sharktopuskracken
+########## Convert IDs by jgierer12 ###########
+# for sharktopuskracken
+# Converts old integer IDs to string IDs ('minecraft:' IDs)
+
+########## VERSION 1.1 ###########
+# Now supports /give
+
 
 
 from pymclevel import TAG_List
@@ -15,7 +20,7 @@ from pymclevel import TAG_Long
 import math
 
 
-# List of old and new IDs copied from http://www.minecraftforum.net/topic/1994759-new-item-id-system/
+# List of old and new IDs copied from http://www.minecraftforum.net/topic/1994759-new-item-id-system/, updated a bit by destruc7i0n
 IDs = [
 	("0", "minecraft:air"),
 	("1", "minecraft:stone"),
@@ -112,7 +117,7 @@ IDs = [
 	("92", "minecraft:cake"),
 	("93", "minecraft:unpowered_repeater"),
 	("94", "minecraft:powered_repeater"),
-	("95", "minecraft:chest_locked_aprilfools_super_old_legacy_we_should_not_even_have_this"),
+	("95", "minecraft:stained_glass"),
 	("96", "minecraft:trapdoor"),
 	("97", "minecraft:monster_egg"),
 	("98", "minecraft:stonebrick"),
@@ -177,6 +182,9 @@ IDs = [
 	("157", "minecraft:activator_rail"),
 	("158", "minecraft:dropper"),
 	("159", "minecraft:stained_hardened_clay"),
+	("160", "minecraft:stained_glass_pane"),
+	("165", "minecraft:slime"),
+	("166", "minecraft:barrier"),
 	("170", "minecraft:hay_block"),
 	("171", "minecraft:carpet"),
 	("172", "minecraft:hardened_clay"),
@@ -361,7 +369,6 @@ commands = [
 	("setblock", 4),
 	("testforblock", 4),
 	("give", 2),
-	("clear", 2),
 ]
 
 displayName = "Convert IDs"
@@ -369,10 +376,9 @@ displayName = "Convert IDs"
 inputs = (
 	("Include Command Blocks", True),
 	("Include Command Block Minecarts", True),
-	("Mode:", ("Old ID -> New ID", "New ID -> Old ID", "Toggle")),
 )
 
-########## Fast data access by SethBling ##########
+########## Fast data access by SethBli ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None
@@ -386,9 +392,15 @@ def getChunk(x, z):
 			GlobalChunkCache[chunkCoords] = GlobalLevel.getChunk(x>>4, z>>4)
 		except ChunkNotPresent:
 			return None
-
+	
 	return GlobalChunkCache[chunkCoords]
-
+	
+def tileEntityAt(x, y, z):
+	chunk = getChunk(x, z)
+	if chunk == None:
+		return 0
+	return chunk.tileEntityAt(x, y, z)
+	
 ########## End fast data access ##########
 
 def perform(level, box, options):
@@ -402,54 +414,39 @@ def changeIDs(level, box, options, changes):
 	for (bposX, bposZ, oldCommand, isTile, cmdBlock) in changes:
 		oldCommandArray = oldCommand.split()
 
-		wordIndex = 0
-		newCommandArray = []
-		for word in oldCommandArray:
-			for (command, IDIndex) in commands:
-				if word == command or word == "/"+command:
+		for (command, IDIndex) in commands:
+			if oldCommandArray[0] == command or oldCommandArray[0] == "/"+command:
 
-					oldID = oldCommandArray[wordIndex+IDIndex]
-					newID = getNewID(options, oldID)
+				oldID = oldCommandArray[IDIndex]
 
-					oldCommandArray[wordIndex+IDIndex] = newID
+				newID = getNewID(oldID)
 
-					print "Successfully changed "+oldID+" to "+newID+"!"
+				newCommand = " ".join(oldCommandArray[0:IDIndex])+" "+newID+" "+" ".join(oldCommandArray[IDIndex+1:])
 
-			newCommandArray.append(word)
+				print "Successfully changed "+oldID+" to "+newID+"!"
+				print "New command: "+newCommand
 
-			wordIndex = wordIndex+1
+				chunk = getChunk(bposX, bposZ)
 
-		newCommand = " ".join(newCommandArray)
+				if isTile:
+					entities = chunk.TileEntities
+				else:
+					entities = chunk.Entities
 
-		chunk = getChunk(bposX, bposZ)
+				for ent in entities:
+					if ent == cmdBlock:
+						ent["Command"].value = newCommand
 
-		if isTile:
-			entities = chunk.TileEntities
-		else:
-			entities = chunk.Entities
-
-		for ent in entities:
-			if ent == cmdBlock:
-				ent["Command"].value = newCommand
-
-		chunk.dirty = True
-
-		print "New command: "+newCommand
+				chunk.dirty = True
 
 
 
-def getNewID(options, oldID):
+def getNewID(oldID):
 	newID = ""
 
 	for (intID, strID) in IDs:
-		if options["Mode:"] == "Old ID -> New ID" and intID == oldID:
+		if intID == oldID:
 			newID = strID
-		elif options["Mode:"] == "New ID -> Old ID" and strID == oldID:
-			newID = intID
-		elif options["Mode:"] == "Toggle" and intID == oldID:
-			newID = strID
-		elif options["Mode:"] == "Toggle" and strID == oldID:
-			newID = intID
 
 	if newID == "":
 		newID = oldID
@@ -464,15 +461,15 @@ def getChanges(level, box, options):
 			x = tile["x"].value
 			y = tile["y"].value
 			z = tile["z"].value
-
+			
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz and "Command" in tile and options["Include Command Blocks"]:
 				changes.append((x, z, tile["Command"].value, True, tile))
-
+		
 		for ent in chunk.Entities:
 			x = int(ent["Pos"][0].value-0.5)
 			y = int(ent["Pos"][1].value)
 			z = int(ent["Pos"][2].value-0.5)
-
+			
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz and "Command" in ent and options["Include Command Block Minecarts"]:
 				changes.append((x, z, ent["Command"].value, False, ent))
 
