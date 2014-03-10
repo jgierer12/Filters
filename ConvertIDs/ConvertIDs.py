@@ -1,9 +1,5 @@
-########## Convert IDs by jgierer12 ###########
-# for sharktopuskracken
-# Converts old integer IDs to string IDs ('minecraft:' IDs)
-
-########## VERSION 1.1 ###########
-# Now supports /give
+#### Convert IDs ####
+# Filter for MCEdit by jgierer12, suggested by sharktopuskracken
 
 
 
@@ -369,6 +365,7 @@ commands = [
 	("setblock", 4),
 	("testforblock", 4),
 	("give", 2),
+	("clear", 2),
 ]
 
 displayName = "Convert IDs"
@@ -378,10 +375,11 @@ inputs = (
 	("Include Command Block Minecarts", True),
 )
 
-########## Fast data access by SethBli ##########
+########## Fast data access by SethBling ##########
 from pymclevel import ChunkNotPresent
 GlobalChunkCache = {}
 GlobalLevel = None
+
 
 def getChunk(x, z):
 	global GlobalChunkCache
@@ -395,13 +393,8 @@ def getChunk(x, z):
 	
 	return GlobalChunkCache[chunkCoords]
 	
-def tileEntityAt(x, y, z):
-	chunk = getChunk(x, z)
-	if chunk == None:
-		return 0
-	return chunk.tileEntityAt(x, y, z)
-	
 ########## End fast data access ##########
+
 
 def perform(level, box, options):
 	global GlobalLevel
@@ -409,6 +402,7 @@ def perform(level, box, options):
 
 	changes = getChanges(level, box, options)
 	changeIDs(level, box, options, changes)
+
 
 def changeIDs(level, box, options, changes):
 	for (bposX, bposZ, oldCommand, isTile, cmdBlock) in changes:
@@ -440,7 +434,6 @@ def changeIDs(level, box, options, changes):
 				chunk.dirty = True
 
 
-
 def getNewID(oldID):
 	newID = ""
 
@@ -453,6 +446,7 @@ def getNewID(oldID):
 
 	return newID
 
+
 def getChanges(level, box, options):
 	changes = []
 
@@ -461,15 +455,15 @@ def getChanges(level, box, options):
 			x = tile["x"].value
 			y = tile["y"].value
 			z = tile["z"].value
-			
+
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz and "Command" in tile and options["Include Command Blocks"]:
 				changes.append((x, z, tile["Command"].value, True, tile))
-		
+
 		for ent in chunk.Entities:
 			x = int(ent["Pos"][0].value-0.5)
 			y = int(ent["Pos"][1].value)
 			z = int(ent["Pos"][2].value-0.5)
-			
+
 			if x >= box.minx and x < box.maxx and y >= box.miny and y < box.maxy and z >= box.minz and z < box.maxz and "Command" in ent and options["Include Command Block Minecarts"]:
 				changes.append((x, z, ent["Command"].value, False, ent))
 
