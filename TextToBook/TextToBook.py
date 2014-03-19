@@ -1,9 +1,6 @@
 #### Text To Book ####
 # Filter for MCEdit by jgierer12, suggested by MasterM64
 
-
-# -*- coding: utf-8 -*-
-
 # Unescape HTML Entities from http://effbot.org/zone/re-sub.htm#unescape-html
 import re, htmlentitydefs
 
@@ -45,6 +42,8 @@ from pymclevel import TAG_String
 from pymclevel import TAG_Int_Array
 from pymclevel import TAG_Float
 from pymclevel import TAG_Long
+import mceutils
+import numpy
 
 try:
     import win32ui
@@ -58,35 +57,40 @@ from functools import partial
 
 displayName = "Text to Book"
 
-inputs = (
-    ("Convert", ("string", "value=")),
-    ("to a book (Leave blank for GUI File selector)", "label"),
-    ("", "label"),
-    ("Output to", ("Book Item Entity", "Book Item in Chest", "Give Book Command Block")),
-    ("", "label"),
-    ("Make", ("string", "value=Notch")),
-    ("the author of the book", False),
-    ("", "label"),
-    ("Convert text bigger than", 12),
-    ("pt to", "label"),
-    ("fullwidth characters", True),
-    ("uppercase", True),
-    ("", "label"),
-    ("Append", ("string", "value=PTO")),
-    ("to the end of each page", True),
-    ("but the last one", True),
-    ("", "label"),
-    ("Allow splitting a single document page", "label"),
-    ("into multiple minecraft pages", True),
-    ("", "label"),
-    ("Use the file name", ("without extension", "with extension")),
-    ("as the book title (Will be overwritten by a Custom Title", "label"),
-    ("", "label"),
-    ("Use", ("string", "value=Custom Book title")),
-    ("as the book title", True),
-    ("", "label"),
-    ("Make highlighted text obfuscated", True),
-)
+inputs = [
+    (
+        ("Text Options", "title"),
+        ("Convert", ("string", "value=n/a")),
+        ("to a book (\"n/a\" for GUI File selector)", "label"),
+        ("", "label"),
+        ("Convert text bigger than", 12),
+        ("pt to", "label"),
+        (u"\u00b7 fullwidth characters", True),
+        (u"\u00b7 uppercase", True),
+        ("", "label"),
+        ("Append", ("string", "value=PTO")),
+        ("to the end of each page", True),
+        ("but the last one", True),
+        ("", "label"),
+        ("Allow splitting a single document page", "label"),
+        ("into multiple minecraft pages", True),
+        ("", "label"),
+        ("Make highlighted text obfuscated", True),
+    ),
+    (
+        ("Book Options", "title"),
+        ("Output to", ("Book Item Entity", "Book Item in Chest", "Give Book Command Block")),
+        ("", "label"),
+        ("Make", ("string", "value=Notch")),
+        ("the author of the book", False),
+        ("", "label"),
+        ("Use the file name", ("without extension", "with extension")),
+        ("as the book title (Will be overwritten by a Custom Title)", "label"),
+        ("", "label"),
+        ("Use", ("string", "value=Custom Book Title")),
+        ("as the book title", False),
+    ),
+]
 
 # Character widths in px for default Minecraft font
 characterWidths = {
@@ -268,7 +272,7 @@ def perform(level, box, options):
 
     filePath = options["Convert"]
 
-    if filePath == "":
+    if filePath == "n/a":
         try:
             filePath = askOpenFile("Select *.txt or *.docx file to convert to Book...", defaults=False, suffixes=["txt", "docx"])
 
@@ -287,11 +291,11 @@ def perform(level, box, options):
         fileName = fileName[fileName.find("/")+1:]
 
     fileExtension = fileName[fileName.find(".")+1:]
-    
+
     if options["as the book title"]:
         bookTitle = options["Use"]
-    
-    else:  
+
+    else:
         bookTitle = fileName
         if options["Use the file name"] == "with extension":
             bookTitle += "." + fileExtension
@@ -299,9 +303,16 @@ def perform(level, box, options):
     if filePath is None or fileName == "":
         raise Exception("Please select a file!")
 
+    mceutils.showProgress("Generating Book...", progressYield())
+
     totalText = decodeFile(filePath, fileExtension, options)
 
     makeBook(level, box, options, totalText, bookTitle)
+
+
+def progressYield():
+    for i in numpy.arange(0, 1, 0.1):
+        yield i
 
 
 def decodeFile(textFile, textFileExt, options):
@@ -362,9 +373,9 @@ def decodeFile(textFile, textFileExt, options):
                     rawText[documentPage][paragraphNumber][0] += u"\u00A7"+getColor(tagText[tagText.find("w:val")+7:tagText.find("w:val")+13])
                 elif tagText[:4] == "w:sz":
                     if int(tagText[tagText.find("w:val")+7:tagText.find("\"", tagText.find("w:val")+7)]) > options["Convert text bigger than"]*2:
-                        if options["fullwidth characters"]:
+                        if options[u"\u00b7 fullwidth characters"]:
                             fullwidth = True
-                        if options["uppercase"]:
+                        if options[u"\u00b7 uppercase"]:
                             uppercase = True
                 elif tagText[:4] == "w:jc":
                     rawText[documentPage][paragraphNumber][1] = tagText[tagText.find("w:val")+7:tagText.find("\"", tagText.find("w:val")+7)]
