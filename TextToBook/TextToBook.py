@@ -43,7 +43,6 @@ from pymclevel import TAG_Int_Array
 from pymclevel import TAG_Float
 from pymclevel import TAG_Long
 import mceutils
-import numpy
 
 try:
     import win32ui
@@ -303,16 +302,15 @@ def perform(level, box, options):
     if filePath is None or fileName == "":
         raise Exception("Please select a file!")
 
-    mceutils.showProgress("Generating Book...", progressYield())
+    mceutils.showProgress("Generating Book", progressIter())
 
     totalText = decodeFile(filePath, fileExtension, options)
 
     makeBook(level, box, options, totalText, bookTitle)
 
 
-def progressYield():
-    for i in numpy.arange(0, 1, 0.1):
-        yield i
+def progressIter():
+    yield "Depending on your file size, this process could take a while!"
 
 
 def decodeFile(textFile, textFileExt, options):
